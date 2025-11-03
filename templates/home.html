@@ -310,6 +310,62 @@
             color: var(--text-secondary);
         }
 
+        /* Students Section */
+        .students-section {
+            padding: 2rem 5%;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .students-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .students-title {
+            text-align: center;
+            color: var(--primary-kiwi);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .students-list {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .student-item {
+            text-align: center;
+            color: var(--text-primary);
+            padding: 1rem;
+            background: var(--bg-dark);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            min-width: 150px;
+            transition: all 0.3s;
+        }
+
+        .student-item:hover {
+            border-color: var(--primary-kiwi);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(205, 220, 57, 0.2);
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: var(--primary-kiwi);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .student-class {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero h1 {
@@ -328,6 +384,15 @@
                 flex-direction: column;
                 text-align: center;
             }
+
+            .students-list {
+                gap: 1rem;
+            }
+
+            .student-item {
+                min-width: 120px;
+                padding: 0.75rem;
+            }
         }
     </style>
 </head>
@@ -337,6 +402,35 @@
         <div class="logo">DataOptima</div>
         <a href="/demo" class="nav-btn">Try Demo</a>
     </nav>
+
+    <!-- Students Section -->
+    <section class="students-section">
+        <div class="students-container">
+            <h3 class="students-title">فريق العمل</h3>
+            <div class="students-list">
+                <div class="student-item">
+                    <div class="student-name">jomana_138110</div>
+                    <div class="student-class">C5</div>
+                </div>
+                <div class="student-item">
+                    <div class="student-name">rama_232799</div>
+                    <div class="student-class">C5</div>
+                </div>
+                <div class="student-item">
+                    <div class="student-name">batoul_164219</div>
+                    <div class="student-class">C5</div>
+                </div>
+                <div class="student-item">
+                    <div class="student-name">mohamad_162992</div>
+                    <div class="student-class">C5</div>
+                </div>
+                <div class="student-item">
+                    <div class="student-name">raghad_192263</div>
+                    <div class="student-class">C2</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Hero Section -->
     <section class="hero">
