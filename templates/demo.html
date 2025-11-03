@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataOptima - Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Global Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Dark Theme with Kiwi Accent Colors */
+        :root {
+            --primary-kiwi: #cddc39;
+            --kiwi-light: #d4e157;
+            --kiwi-dark: #afb42b;
+            --bg-dark: #0a0e1a;
+            --bg-card: #121827;
+            --bg-hover: #1a2130;
+            --text-primary: #e8eaed;
+            --text-secondary: #9ca3af;
+            --border-color: #2d3748;
+            --error-color: #ef4444;
+            --info-color: #3b82f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(205, 220, 57, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(205, 220, 57, 0.03) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(18, 24, 39, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-kiwi);
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-kiwi);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 5%;
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-kiwi);
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Upload Card */
+        .upload-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg-dark);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-kiwi);
+            background: rgba(205, 220, 57, 0.03);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-kiwi);
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .upload-hint {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* File Info */
+        .file-info {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(205, 220, 57, 0.1);
+            border-left: 3px solid var(--primary-kiwi);
+            border-radius: 8px;
+            color: var(--text-primary);
+        }
+
+        .file-info.active {
+            display: block;
+        }
+
+        /* Settings Grid */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-label {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        input[type="number"] {
+            padding: 0.75rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary-kiwi);
+            box-shadow: 0 0 0 3px rgba(205, 220, 57, 0.1);
+        }
+
+        /* Button */
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-kiwi);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1.5rem;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--kiwi-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(205, 220, 57, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+            margin-top: 2rem;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--primary-kiwi);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Error Message */
+        .error-msg {
+            display: none;
+            padding: 1rem;
+            margin-top: 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid var(--error-color);
+            border-radius: 8px;
+            color: var(--error-color);
+        }
+
+        .error-msg.active {
+            display: block;
+        }
+
+        /* Results Section */
+        .results {
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .results-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--primary-kiwi);
+        }
+
+        .results-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-kiwi);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-kiwi);
+            box-shadow: 0 8px 20px rgba(205, 220, 57, 0.15);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-kiwi);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-description {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Charts Section */
+        .section-header {
+            text-align: center;
+            margin: 4rem 0 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: var(--primary-kiwi);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Explanation Boxes */
+        .explanation-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--info-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .explanation-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--info-color);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .explanation-text {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Comparison Table */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--bg-dark);
+            color: var(--primary-kiwi);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary-kiwi);
+        }
+
+        td {
+            padding: 1rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background: var(--bg-hover);
+        }
+
+        .highlight-row {
+            background: rgba(205, 220, 57, 0.1);
+        }
+
+        .winner-badge {
+            background: var(--primary-kiwi);
+            color: var(--bg-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 0.5rem;
+        }
+
+        /* Features Section */
+        .features-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .features-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .features-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .features-count {
+            background: var(--primary-kiwi);
+            color: var(--bg-dark);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .feature-tag {
+            padding: 0.75rem 1rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            color: var(--text-primary);
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .feature-tag:hover {
+            border-color: var(--primary-kiwi);
+            background: rgba(205, 220, 57, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* Insights Section */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .insight-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .insight-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(205, 220, 57, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .insight-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .insight-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="/" class="logo">DataOptima</a>
+        <a href="/" class="nav-link">← Back to Home</a>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Feature Optimization Demo</h1>
+            <p>Upload your dataset and let evolutionary algorithms find the optimal features</p>
+        </div>
+
+        <!-- Upload Card -->
+        <div class="upload-card">
+            <h2 class="card-title">Upload Dataset</h2>
+            
+            <div class="upload-area" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Drop your CSV or Excel file here or click to browse</div>
+                <div class="upload-hint">Supports: .csv, .xlsx, .xls | Maximum file size: 16MB</div>
+            </div>
+            
+            <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" />
+            
+            <div class="file-info" id="fileInfo"></div>
+
+            <!-- Settings -->
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label class="input-label">Population Size</label>
+                    <input type="number" id="populationSize" value="30" min="20" max="100" />
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Generations</label>
+                    <input type="number" id="generations" value="20" min="10" max="50" />
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Mutation Rate</label>
+                    <input type="number" id="mutationRate" value="0.1" min="0" max="0.3" step="0.05" />
+                </div>
+            </div>
+
+            <button class="btn-primary" id="optimizeBtn" onclick="startOptimization()" disabled>
+                Start Optimization
+            </button>
+
+            <div class="error-msg" id="errorMsg"></div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p class="loading-text">Optimizing features... This may take a moment</p>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results" id="results">
+            <h2 class="results-title">Optimization Results</h2>
+            <p class="results-subtitle">Detailed analysis of feature selection performance</p>
+
+            <!-- Key Metrics -->
+            <div class="metrics-grid" id="metricsGrid"></div>
+
+            <!-- Explanation Box -->
+            <div class="explanation-box">
+                <div class="explanation-title">
+                    <span>💡</span>
+                    <span>Understanding Your Results</span>
+                </div>
+                <p class="explanation-text">
+                    The evolutionary optimizer uses bio-inspired algorithms to intelligently search through possible feature combinations. 
+                    It evaluates each combination using cross-validated accuracy while penalizing excessive feature usage, 
+                    finding the sweet spot between model performance and simplicity. Higher accuracy with fewer features indicates better optimization.
+                </p>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="section-header">
+                <h2>Performance Visualizations</h2>
+                <p>Compare evolutionary optimization against traditional selection methods</p>
+            </div>
+
+            <div class="charts-grid">
+                <!-- Radar Chart for Method Comparison -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Method Performance Radar</h3>
+                        <p class="chart-subtitle">Multi-dimensional comparison of all selection methods</p>
+                    </div>
+                    <canvas id="radarChart"></canvas>
+                </div>
+
+                <!-- Doughnut Chart for Feature Distribution -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Feature Reduction Distribution</h3>
+                        <p class="chart-subtitle">Percentage of features selected vs eliminated</p>
+                    </div>
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+
+                <!-- Line Chart for Evolution Progress (Full Width) -->
+                <div class="chart-card full-width">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Evolution Progress Over Generations</h3>
+                        <p class="chart-subtitle">Track how fitness improves throughout the evolutionary process</p>
+                    </div>
+                    <canvas id="lineChart"></canvas>
+                </div>
+
+                <!-- Horizontal Bar Chart for Detailed Comparison -->
+                <div class="chart-card full-width">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Accuracy vs Feature Count Comparison</h3>
+                        <p class="chart-subtitle">Balance between model accuracy and feature economy</p>
+                    </div>
+                    <canvas id="horizontalBarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed Insights -->
+            <div class="section-header">
+                <h2>Key Insights</h2>
+                <p>What the analysis reveals about your dataset</p>
+            </div>
+
+            <div class="insights-grid" id="insightsGrid"></div>
+
+            <!-- Comparison Table -->
+            <div class="table-card">
+                <h3 class="chart-title">Detailed Method Comparison</h3>
+                <table id="comparisonTable"></table>
+            </div>
+
+            <!-- Method Explanations -->
+            <div class="explanation-box">
+                <div class="explanation-title">
+                    <span>📚</span>
+                    <span>Method Descriptions</span>
+                </div>
+                <div class="explanation-text">
+                    <p><strong>Evolutionary:</strong> Bio-inspired algorithm using selection, crossover, and mutation to evolve optimal feature subsets.</p>
+                    <p><strong>Statistical Test:</strong> ANOVA F-test measuring linear relationships between features and target.</p>
+                    <p><strong>Information Theory:</strong> Mutual Information capturing both linear and non-linear dependencies.</p>
+                    <p><strong>Recursive:</strong> Backward elimination iteratively removing least important features.</p>
+                    <p><strong>Tree-Based:</strong> Random Forest feature importance using Gini impurity reduction.</p>
+                </div>
+            </div>
+
+            <!-- Selected Features -->
+            <div class="features-card">
+                <div class="features-header">
+                    <h3 class="features-title">Optimized Feature Set</h3>
+                    <span class="features-count" id="featuresCount">0</span>
+                </div>
+                <div class="features-grid" id="featuresList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        const fileInput = document.getElementById('fileInput');
+        const uploadBox = document.getElementById('uploadBox');
+        const fileInfo = document.getElementById('fileInfo');
+        const optimizeBtn = document.getElementById('optimizeBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const errorMsg = document.getElementById('errorMsg');
+
+        let selectedFile = null;
+        let radarChart = null;
+        let doughnutChart = null;
+        let lineChart = null;
+        let horizontalBarChart = null;
+
+        // Drag and drop handlers
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = 'var(--primary-kiwi)';
+        });
+
+        uploadBox.addEventListener('dragleave', () => {
+            uploadBox.style.borderColor = 'var(--border-color)';
+        });
+
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = 'var(--border-color)';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        // Handle file selection
+        function handleFileSelect(file) {
+            const validExtensions = ['.csv', '.xlsx', '.xls'];
+            const isValid = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+            if (!isValid) {
+                showError('Please upload a CSV or Excel file');
+                return;
+            }
+
+            selectedFile = file;
+            fileInfo.innerHTML = `<strong>File:</strong> ${file.name} | <strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB`;
+            fileInfo.classList.add('active');
+            
+            // Preview dataset
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/api/preview', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+                
+                fileInfo.innerHTML += ` | <strong>Rows:</strong> ${data.total_rows} | <strong>Columns:</strong> ${data.total_columns}`;
+                optimizeBtn.disabled = false;
+            })
+            .catch(error => {
+                showError('Error reading file: ' + error.message);
+            });
+        }
+
+        // Show error message
+        function showError(message) {
+            errorMsg.textContent = message;
+            errorMsg.classList.add('active');
+            setTimeout(() => {
+                errorMsg.classList.remove('active');
+            }, 5000);
+        }
+
+        // Start optimization
+        function startOptimization() {
+            if (!selectedFile) {
+                showError('Please select a file first');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('target_column', '');
+            formData.append('population_size', document.getElementById('populationSize').value);
+            formData.append('generations', document.getElementById('generations').value);
+            formData.append('mutation_rate', document.getElementById('mutationRate').value);
+
+            loading.classList.add('active');
+            results.classList.remove('active');
+            optimizeBtn.disabled = true;
+
+            fetch('/api/optimize', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.classList.remove('active');
+                optimizeBtn.disabled = false;
+
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+
+                displayResults(data);
+            })
+            .catch(error => {
+                loading.classList.remove('active');
+                optimizeBtn.disabled = false;
+                showError('Processing error: ' + error.message);
+            });
+        }
+
+        // Display results
+        function displayResults(data) {
+            results.classList.add('active');
+            results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Display metrics with descriptions
+            displayMetrics(data);
+            
+            // Create all charts
+            createRadarChart(data);
+            createDoughnutChart(data);
+            createLineChart(data);
+            createHorizontalBarChart(data);
+
+            // Display insights
+            displayInsights(data);
+
+            // Display table
+            displayComparisonTable(data);
+
+            // Display features
+            displayFeatures(data);
+        }
+
+        // Display metrics with detailed descriptions
+        function displayMetrics(data) {
+            const metricsGrid = document.getElementById('metricsGrid');
+            const reductionPercent = ((1 - data.evolutionary_optimization.feature_count / data.dataset_info.total_features) * 100).toFixed(1);
+            const accuracyPercent = (data.evolutionary_optimization.accuracy * 100).toFixed(2);
+            
+            metricsGrid.innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-value">${accuracyPercent}%</div>
+                    <div class="metric-label">Model Accuracy</div>
+                    <div class="metric-description">Cross-validated performance score on selected features</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">${data.evolutionary_optimization.feature_count}</div>
+                    <div class="metric-label">Features Selected</div>
+                    <div class="metric-description">Optimal subset identified by evolutionary algorithm</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">${reductionPercent}%</div>
+                    <div class="metric-label">Dimensionality Reduction</div>
+                    <div class="metric-description">Percentage of features eliminated while maintaining accuracy</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">${data.dataset_info.total_features}</div>
+                    <div class="metric-label">Original Features</div>
+                    <div class="metric-description">Total number of features in your dataset</div>
+                </div>
+            `;
+        }
+
+        // Create Radar Chart
+        function createRadarChart(data) {
+            const ctx = document.getElementById('radarChart');
+            
+            if (radarChart) {
+                radarChart.destroy();
+            }
+
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: data.baseline_comparison.methods,
+                    datasets: [{
+                        label: 'Accuracy Score',
+                        data: data.baseline_comparison.accuracy_scores.map(acc => (acc * 100).toFixed(2)),
+                        backgroundColor: 'rgba(205, 220, 57, 0.2)',
+                        borderColor: 'rgba(205, 220, 57, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(205, 220, 57, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(205, 220, 57, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: '#9ca3af',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                color: '#2d3748'
+                            },
+                            pointLabels: {
+                                color: '#e8eaed',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create Doughnut Chart
+        function createDoughnutChart(data) {
+            const ctx = document.getElementById('doughnutChart');
+            
+            if (doughnutChart) {
+                doughnutChart.destroy();
+            }
+
+            const selected = data.evolutionary_optimization.feature_count;
+            const eliminated = data.dataset_info.total_features - selected;
+
+            doughnutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Selected Features', 'Eliminated Features'],
+                    datasets: [{
+                        data: [selected, eliminated],
+                        backgroundColor: [
+                            'rgba(205, 220, 57, 0.8)',
+                            'rgba(100, 116, 139, 0.3)'
+                        ],
+                        borderColor: [
+                            'rgba(205, 220, 57, 1)',
+                            'rgba(100, 116, 139, 0.5)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e8eaed',
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create Line Chart for Evolution Progress
+        function createLineChart(data) {
+            const ctx = document.getElementById('lineChart');
+            
+            if (lineChart) {
+                lineChart.destroy();
+            }
+
+            const history = data.evolutionary_optimization.evolution_history || [];
+            const generations = history.map(h => h.generation);
+            const bestFitness = history.map(h => (h.best_fitness * 100).toFixed(2));
+            const avgFitness = history.map(h => (h.avg_fitness * 100).toFixed(2));
+
+            lineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: generations,
+                    datasets: [
+                        {
+                            label: 'Best Fitness',
+                            data: bestFitness,
+                            borderColor: 'rgba(205, 220, 57, 1)',
+                            backgroundColor: 'rgba(205, 220, 57, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Average Fitness',
+                            data: avgFitness,
+                            borderColor: 'rgba(100, 116, 139, 1)',
+                            backgroundColor: 'rgba(100, 116, 139, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 3,
+                            pointHoverRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#e8eaed',
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#9ca3af',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                color: '#2d3748'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Generation',
+                                color: '#9ca3af'
+                            },
+                            ticks: {
+                                color: '#9ca3af'
+                            },
+                            grid: {
+                                color: '#2d3748'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create Horizontal Bar Chart
+        function createHorizontalBarChart(data) {
+            const ctx = document.getElementById('horizontalBarChart');
+            
+            if (horizontalBarChart) {
+                horizontalBarChart.destroy();
+            }
+
+            horizontalBarChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.baseline_comparison.methods,
+                    datasets: [
+                        {
+                            label: 'Accuracy (%)',
+                            data: data.baseline_comparison.accuracy_scores.map(acc => (acc * 100).toFixed(2)),
+                            backgroundColor: 'rgba(205, 220, 57, 0.7)',
+                            borderColor: 'rgba(205, 220, 57, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Feature Count',
+                            data: data.baseline_comparison.feature_counts,
+                            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#e8eaed',
+                                padding: 15
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#9ca3af'
+                            },
+                            grid: {
+                                color: '#2d3748'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#9ca3af'
+                            },
+                            grid: {
+                                color: '#2d3748'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Display insights
+        function displayInsights(data) {
+            const insightsGrid = document.getElementById('insightsGrid');
+            const reductionPercent = ((1 - data.evolutionary_optimization.feature_count / data.dataset_info.total_features) * 100).toFixed(1);
+            const accuracyPercent = (data.evolutionary_optimization.accuracy * 100).toFixed(2);
+            
+            // Find best method
+            const accuracies = data.baseline_comparison.accuracy_scores;
+            const maxAccuracy = Math.max(...accuracies);
+            const bestMethodIndex = accuracies.indexOf(maxAccuracy);
+            const bestMethod = data.baseline_comparison.methods[bestMethodIndex];
+            
+            // Calculate efficiency score
+            const efficiency = (data.evolutionary_optimization.accuracy / (data.evolutionary_optimization.feature_count / data.dataset_info.total_features)).toFixed(2);
+
+            insightsGrid.innerHTML = `
+                <div class="insight-card">
+                    <div class="insight-icon">🎯</div>
+                    <h3 class="insight-title">Best Performer</h3>
+                    <p class="insight-text">
+                        <strong>${bestMethod}</strong> achieved the highest accuracy at ${(maxAccuracy * 100).toFixed(2)}%. 
+                        ${bestMethodIndex === 0 ? 'The evolutionary approach led all methods!' : 'Consider this method for production use.'}
+                    </p>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">📉</div>
+                    <h3 class="insight-title">Dimensionality Impact</h3>
+                    <p class="insight-text">
+                        Successfully reduced ${reductionPercent}% of features while maintaining ${accuracyPercent}% accuracy. 
+                        This will significantly improve training speed and reduce overfitting risk.
+                    </p>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">⚡</div>
+                    <h3 class="insight-title">Efficiency Score</h3>
+                    <p class="insight-text">
+                        Efficiency rating: ${efficiency}. This measures accuracy per feature ratio. 
+                        Higher scores indicate better balance between performance and parsimony.
+                    </p>
+                </div>
+            `;
+        }
+
+        // Display comparison table
+        function displayComparisonTable(data) {
+            const table = document.getElementById('comparisonTable');
+            
+            // Find winner
+            const accuracies = data.baseline_comparison.accuracy_scores;
+            const maxAccuracy = Math.max(...accuracies);
+            
+            let html = `
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Accuracy</th>
+                        <th>Features Selected</th>
+                        <th>Reduction</th>
+                        <th>Efficiency</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            for (let i = 0; i < data.baseline_comparison.methods.length; i++) {
+                const reduction = ((1 - data.baseline_comparison.feature_counts[i] / data.dataset_info.total_features) * 100).toFixed(1);
+                const accuracy = data.baseline_comparison.accuracy_scores[i];
+                const efficiency = (accuracy / (data.baseline_comparison.feature_counts[i] / data.dataset_info.total_features)).toFixed(3);
+                const isWinner = accuracy === maxAccuracy;
+                const isEvolutionary = i === 0;
+                
+                html += `
+                    <tr ${isEvolutionary ? 'class="highlight-row"' : ''}>
+                        <td>
+                            <strong>${data.baseline_comparison.methods[i]}</strong>
+                            ${isWinner ? '<span class="winner-badge">BEST</span>' : ''}
+                        </td>
+                        <td>${(accuracy * 100).toFixed(2)}%</td>
+                        <td>${data.baseline_comparison.feature_counts[i]}</td>
+                        <td>${reduction}%</td>
+                        <td>${efficiency}</td>
+                    </tr>
+                `;
+            }
+
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+
+        // Display features
+        function displayFeatures(data) {
+            const features = data.evolutionary_optimization.feature_names;
+            document.getElementById('featuresCount').textContent = features.length;
+            
+            const container = document.getElementById('featuresList');
+            container.innerHTML = features.map((feature, index) => 
+                `<div class="feature-tag">${index + 1}. ${feature}</div>`
+            ).join('');
+        }
+    </script>
+</body>
+</html>
